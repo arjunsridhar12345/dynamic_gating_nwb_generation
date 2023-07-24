@@ -101,21 +101,29 @@ if __name__ == '__main__':
         if nwb_session_directory.exists():
             if len(list(nwb_session_directory.glob('*'))) > 0 and '607660' not in non_doc_experiment:
                 run_nwb_pipeline(non_doc_experiment)
+    
+    sessions = ['1224385827_633232_20221107']
+
+    for session in sessions:
+        if session in non_doc_experiments:
+            run_nwb_pipeline(session, non_doc=True)
+        else:
+            run_nwb_pipeline(session)
     """
-    session = '1226251663_636740_20221115'
-    if session in non_doc_experiments:
-        run_nwb_pipeline(session, non_doc=True)
-    else:
-        run_nwb_pipeline(session)
-    """
+    
     for experiment in experiments:
         nwb_session_directory = pathlib.Path(nwb_directory, experiment[0:experiment.index('_')])
         if nwb_session_directory.exists():
-            if len(list(nwb_session_directory.glob('*.nwb'))) > 0 or '1182628226' in experiment or '1182427414' in experiment \
-            or '1182871514' in experiment:
-                print(experiment)
-                if experiment in non_doc_experiments:
-                    run_nwb_pipeline(experiment, non_doc=True)
-                else:
-                    run_nwb_pipeline(experiment)
-    """
+            if '1214409109_626279_20220927' not in experiment and ('626279' in experiment or '632295' in experiment or '633232' in experiment
+                                                                   or '636740' in experiment or '637483' in experiment
+                                                                   or '637488' in experiment or '638387' in experiment 
+                                                                   or '640887' in experiment or '640890' in experiment
+                                                                   or '642504' in experiment):
+                if len(list(nwb_session_directory.glob('*.nwb'))) > 0:
+                    print(experiment)
+                    if experiment in non_doc_experiments:
+                        run_nwb_pipeline(experiment, non_doc=True)
+                    else:
+                        run_nwb_pipeline(experiment)
+    
+    

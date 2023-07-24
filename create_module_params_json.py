@@ -10,6 +10,7 @@ from stimulus_table import get_ecephys_stimulus_table_json
 from nwb_input import generate_nwb_input_json
 import argparse
 from generate_align_timestamps import run_align_timestamps
+import pandas as pd
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--session', help='Session of experiment', required=True)
@@ -174,9 +175,25 @@ def save_running_speed_json(session_parameters:dict):
         json.dump(input_json, f, indent=2)
 
 def save_nwb_json(session_parameters: dict, session:np_session.Session, non_doc=False):
+    structure_tree = pd.read_csv(r"\\allen\programs\mindscope\workgroups\dynamicrouting\dynamic_gating_insertions\ccf_structure_tree_2017.csv")
+    isi_areas = pd.read_excel(pathlib.Path('//allen/programs/mindscope/workgroups/dynamicrouting/dynamic_gating/dg_vis_areas_hmc_071223.xlsx'))
+
+    probe_lookup_table = pd.read_csv(r"\\allen\programs\mindscope\workgroups\dynamicrouting\dynamic_gating\nwbs\probes_lookup_table.csv")
+    channel_lookup_table = pd.read_csv(r"\\allen\programs\mindscope\workgroups\dynamicrouting\dynamic_gating\nwbs\channels_lookup_table.csv")
+    unit_lookup_table = pd.read_csv(r"\\allen\programs\mindscope\workgroups\dynamicrouting\dynamic_gating\nwbs\units_lookup_table.csv")
+
+    probe_ids = probe_lookup_table[probe_lookup_table['session'] == session.id]['index'].values
+    channel_start = 0
+    unit_start = 0
+
     for probe in session_parameters['probes']:
+        probe_index = session_parameters['probes'].index(probe)
+        probe_id = int(probe_ids[probe_index])
+
         session_parameters['current_probe'] = probe
-        session_parameters, input_json = generate_nwb_input_json(session_parameters, session, non_doc)
+        session_parameters, input_json, channel_start, unit_start = generate_nwb_input_json(session_parameters, session, isi_areas, structure_tree, 
+                                                                 probe_id, channel_lookup_table, unit_lookup_table, channel_start, unit_start,
+                                                                 non_doc=non_doc)
 
         output_dir_path = pathlib.Path(session_parameters['base_directory'], 'SDK_outputs', probe)
         if not output_dir_path.exists():
@@ -194,14 +211,15 @@ def generate_sdk_modules(session_str: str, non_doc=False):
 
     #lfp_timestamps_generation(session_parameters)
     #save_lfp_subsampling_json(session_parameters)
-    #save_align_timestamps_json(session_parameters)
-    #run_align_timestamps(session_str)
-    #save_optotagging_json(session_parameters)
+    save_align_timestamps_json(session_parameters)
+    run_align_timestamps(session_str)
+    save_optotagging_json(session_parameters)
     save_stimulus_table_json(session_parameters, non_doc=non_doc)
     #save_current_source_density_json(session_parameters)
     save_nwb_json(session_parameters, session, non_doc=non_doc)
 
 if __name__ == '__main__':
+    """
     #session = np_session.Session('1202644967')
     nwb_path = pathlib.Path('//allen/programs/mindscope/workgroups/dynamicrouting/dynamic_gating/nwbs')
     nwb_directories = list(nwb_path.iterdir())
@@ -217,3 +235,11 @@ if __name__ == '__main__':
                     #lfp_timestamps_generation(session_parameters)
                     #save_lfp_subsampling_json(session_parameters)
                     save_current_source_density_json(session_parameters)
+    """
+    #session = np_session.Session('1179670730_612090_20220524')
+    #session_parameters = generate_session_parameters(session)
+
+    sessions = ['1182427414_607660_20220606']
+
+    for session in sessions:
+        generate_sdk_modules(session)
