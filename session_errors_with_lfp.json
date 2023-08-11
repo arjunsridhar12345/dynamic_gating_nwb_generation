@@ -2670,3 +2670,75 @@
   ]
 }
 
+{
+  "1214409109_626279_20220927": [
+    "",
+    "WARNING:root:setting Dict fields not supported from argparse\nC:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\allensdk\\brain_observatory\\ecephys\\file_io\\ecephys_sync_dataset.py:49: UserWarning: unable to find LED times using line labels('LED_sync', 'opto_trial'), returning line 18\n  warnings.warn(\"unable to find LED times using line labels\" +\n",
+    null
+  ]
+}
+
+{
+  "1173189336_604914_20220426": [
+    "Traceback (most recent call last):\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\runpy.py\", line 197, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\runpy.py\", line 87, in _run_code\n    exec(code, run_globals)\n  File \"c:\\users\\arjun.sridhar\\source\\repos\\ecephys_etl_pipelines\\src\\ecephys_etl\\modules\\dynamic_gating_create_stim_table\\__main__.py\", line 54, in <module>\n    stim_table_maker.run()\n  File \"c:\\users\\arjun.sridhar\\source\\repos\\ecephys_etl_pipelines\\src\\ecephys_etl\\modules\\dynamic_gating_create_stim_table\\__main__.py\", line 36, in run\n    stim_table: pd.DataFrame = create_dynamic_gating_stimulus_table(\n  File \"c:\\users\\arjun.sridhar\\source\\repos\\ecephys_etl_pipelines\\src\\ecephys_etl\\modules\\dynamic_gating_create_stim_table\\create_dynamic_gating_stim_table.py\", line 1325, in create_dynamic_gating_stimulus_table\n    order = get_stim_order(sync_dataset, [behavior_pkl, mapping_pkl])\n  File \"c:\\users\\arjun.sridhar\\source\\repos\\ecephys_etl_pipelines\\src\\ecephys_etl\\modules\\dynamic_gating_create_stim_table\\create_dynamic_gating_stim_table.py\", line 1274, in get_stim_order\n    raise ValueError('No match between the pkl frame counts and the sync frame counts')\nValueError: No match between the pkl frame counts and the sync frame counts\n",
+    "WARNING:root:setting Dict fields not supported from argparse\nC:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\allensdk\\brain_observatory\\ecephys\\file_io\\ecephys_sync_dataset.py:49: UserWarning: unable to find LED times using line labels('LED_sync', 'opto_trial'), returning line 18\n  warnings.warn(\"unable to find LED times using line labels\" +\n",
+    null
+  ]
+}
+
+{
+  "1173189336_604914_20220426": [
+    "Traceback (most recent call last):\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\runpy.py\", line 197, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\runpy.py\", line 87, in _run_code\n    exec(code, run_globals)\n  File \"c:\\users\\arjun.sridhar\\source\\repos\\ecephys_etl_pipelines\\src\\ecephys_etl\\modules\\dynamic_gating_create_stim_table\\__main__.py\", line 54, in <module>\n    stim_table_maker.run()\n  File \"c:\\users\\arjun.sridhar\\source\\repos\\ecephys_etl_pipelines\\src\\ecephys_etl\\modules\\dynamic_gating_create_stim_table\\__main__.py\", line 36, in run\n    stim_table: pd.DataFrame = create_dynamic_gating_stimulus_table(\n  File \"c:\\users\\arjun.sridhar\\source\\repos\\ecephys_etl_pipelines\\src\\ecephys_etl\\modules\\dynamic_gating_create_stim_table\\create_dynamic_gating_stim_table.py\", line 1326, in create_dynamic_gating_stimulus_table\n    order = get_stim_order(sync_dataset, [behavior_pkl, mapping_pkl])\n  File \"c:\\users\\arjun.sridhar\\source\\repos\\ecephys_etl_pipelines\\src\\ecephys_etl\\modules\\dynamic_gating_create_stim_table\\create_dynamic_gating_stim_table.py\", line 1275, in get_stim_order\n    raise ValueError('No match between the pkl frame counts and the sync frame counts')\nValueError: No match between the pkl frame counts and the sync frame counts\n",
+    "WARNING:root:setting Dict fields not supported from argparse\nC:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\allensdk\\brain_observatory\\ecephys\\file_io\\ecephys_sync_dataset.py:49: UserWarning: unable to find LED times using line labels('LED_sync', 'opto_trial'), returning line 18\n  warnings.warn(\"unable to find LED times using line labels\" +\n",
+    null
+  ]
+}
+
+{
+  "1173189336_604914_20220426": [
+    "",
+    "WARNING:root:setting Dict fields not supported from argparse\nC:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\allensdk\\brain_observatory\\ecephys\\file_io\\ecephys_sync_dataset.py:49: UserWarning: unable to find LED times using line labels('LED_sync', 'opto_trial'), returning line 18\n  warnings.warn(\"unable to find LED times using line labels\" +\n",
+    null
+  ]
+}
+
+{
+  "1173189336_604914_20220426": [
+    "",
+    "WARNING:root:setting Dict fields not supported from argparse\nc:\\users\\arjun.sridhar\\source\\repos\\allensdk\\allensdk\\brain_observatory\\ecephys\\file_io\\ecephys_sync_dataset.py:49: UserWarning: unable to find LED times using line labels('LED_sync', 'opto_trial'), returning line 18\n  warnings.warn(\"unable to find LED times using line labels\" +\n",
+    null
+  ]
+}
+
+{
+  "1173189336_604914_20220426": [
+    "",
+    "WARNING:root:setting Dict fields not supported from argparse\nc:\\users\\arjun.sridhar\\source\\repos\\allensdk\\allensdk\\brain_observatory\\ecephys\\file_io\\ecephys_sync_dataset.py:49: UserWarning: unable to find LED times using line labels('LED_sync', 'opto_trial'), returning line 18\n  warnings.warn(\"unable to find LED times using line labels\" +\n",
+    null
+  ]
+}
+
+{
+  "1173189336_604914_20220426": [
+    "",
+    "WARNING:root:setting Dict fields not supported from argparse\nc:\\users\\arjun.sridhar\\source\\repos\\allensdk\\allensdk\\brain_observatory\\ecephys\\file_io\\ecephys_sync_dataset.py:49: UserWarning: unable to find LED times using line labels('LED_sync', 'opto_trial'), returning line 18\n  warnings.warn(\"unable to find LED times using line labels\" +\n",
+    null
+  ]
+}
+
+{
+  "1173189336_604914_20220426": [
+    "",
+    "WARNING:root:setting Dict fields not supported from argparse\nc:\\users\\arjun.sridhar\\source\\repos\\allensdk\\allensdk\\brain_observatory\\ecephys\\file_io\\ecephys_sync_dataset.py:49: UserWarning: unable to find LED times using line labels('LED_sync', 'opto_trial'), returning line 18\n  warnings.warn(\"unable to find LED times using line labels\" +\n",
+    null
+  ]
+}
+
+{
+  "1173741216_604914_20220428": [
+    "",
+    "WARNING:root:setting Dict fields not supported from argparse\nc:\\users\\arjun.sridhar\\source\\repos\\allensdk\\allensdk\\brain_observatory\\ecephys\\file_io\\ecephys_sync_dataset.py:49: UserWarning: unable to find LED times using line labels('LED_sync', 'opto_trial'), returning line 18\n  warnings.warn(\"unable to find LED times using line labels\" +\n",
+    null
+  ]
+}
+

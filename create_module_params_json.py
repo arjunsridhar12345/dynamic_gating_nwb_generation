@@ -45,7 +45,7 @@ def generate_session_parameters(session: np_session.Session) -> dict:
     #print(session.npexp_path)
     project = session.project
     probes = ['probe{}'.format(probe) for probe in list(session.probe_letter_to_metrics_csv_path)]
-    #probes = ['probeA', 'probeD', 'probeE', 'probeF']
+    #probes = ['probeA']
     first_probe = probes[0]
     final_probe = probes[-1]
     probe_count = len(probes)
@@ -179,21 +179,42 @@ def save_nwb_json(session_parameters: dict, session:np_session.Session, non_doc=
     isi_areas = pd.read_excel(pathlib.Path('//allen/programs/mindscope/workgroups/dynamicrouting/dynamic_gating/dg_vis_areas_hmc_071223.xlsx'))
 
     probe_lookup_table = pd.read_csv(r"\\allen\programs\mindscope\workgroups\dynamicrouting\dynamic_gating\nwbs\probes_lookup_table.csv")
-    channel_lookup_table = pd.read_csv(r"\\allen\programs\mindscope\workgroups\dynamicrouting\dynamic_gating\nwbs\channels_lookup_table.csv")
-    unit_lookup_table = pd.read_csv(r"\\allen\programs\mindscope\workgroups\dynamicrouting\dynamic_gating\nwbs\units_lookup_table.csv")
 
-    probe_ids = probe_lookup_table[probe_lookup_table['session'] == session.id]['index'].values
+    if session.id in probe_lookup_table['session'].values:
+        probe_in_lookup = True
+        probe_ids = probe_lookup_table[probe_lookup_table['session'] == session.id]['index'].values
+    else:
+        probe_in_lookup = False
+        new_probe_lookup_table = {}
+        max_probe_id = probe_lookup_table['index'].max()
+        probe_ids = []
+        sessions = probe_lookup_table['session'].values.tolist()
+        probe_indices = probe_lookup_table['index'].values.tolist()
+
+        for i in range(len(session_parameters['probes'])):
+            max_probe_id += 1
+            probe_ids.append(max_probe_id)
+            sessions.append(session.id)
+            probe_indices.append(max_probe_id)
+        
+        new_probe_lookup_table['session'] = sessions
+        new_probe_lookup_table['index'] = probe_indices
+        df_new_probe_lookup_table = pd.DataFrame(new_probe_lookup_table)
+        df_new_probe_lookup_table.to_csv(r"\\allen\programs\mindscope\workgroups\dynamicrouting\dynamic_gating\nwbs\probes_lookup_table.csv",
+                                         index=False)
+
     channel_start = 0
     unit_start = 0
-
     for probe in session_parameters['probes']:
+        channel_lookup_table = pd.read_csv(r"\\allen\programs\mindscope\workgroups\dynamicrouting\dynamic_gating\nwbs\channels_lookup_table.csv")
+        unit_lookup_table = pd.read_csv(r"\\allen\programs\mindscope\workgroups\dynamicrouting\dynamic_gating\nwbs\units_lookup_table.csv")
         probe_index = session_parameters['probes'].index(probe)
         probe_id = int(probe_ids[probe_index])
 
         session_parameters['current_probe'] = probe
         session_parameters, input_json, channel_start, unit_start = generate_nwb_input_json(session_parameters, session, isi_areas, structure_tree, 
                                                                  probe_id, channel_lookup_table, unit_lookup_table, channel_start, unit_start,
-                                                                 non_doc=non_doc)
+                                                                 non_doc=non_doc, probe_in_lookup=probe_in_lookup)
 
         output_dir_path = pathlib.Path(session_parameters['base_directory'], 'SDK_outputs', probe)
         if not output_dir_path.exists():

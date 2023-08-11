@@ -68,3 +68,6 @@ def get_area_color(area, structure_tree):
     else:
         color = '808080'
     return '#' + color
+
+if __name__ == '__main__':
+    print(list_parents('VISp', structure_tree))
