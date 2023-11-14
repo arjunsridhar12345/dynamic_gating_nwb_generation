@@ -15,6 +15,8 @@ from psycopg2 import connect, extras
 from typing import Union
 from ccf_utils import list_parents
 
+NUM_CHANNELS = 384
+
 def check_and_make_output_path(output_path:pathlib.Path):
     if not output_path.exists():
         output_path.mkdir()
@@ -71,8 +73,8 @@ def strip_subregions_layers(areastr, structure_tree:pd.DataFrame):
     return areastr
 
 def get_channels_info_for_probe(current_probe:str, session_data_dict:dict, probe_id:int, session:np_session.Session,
-                                structure_tree:pd.DataFrame, channel_lookup_table:pd.DataFrame, channel_start:int,
-                                probe_in_lookup:bool=True):
+                                structure_tree:pd.DataFrame, channel_lookup_table:pd.DataFrame, channel_lookup_table_output_path: pathlib.Path,
+                                channel_start:int, probe_in_lookup:bool=True):
     channels = []
 
     """
@@ -84,6 +86,7 @@ def get_channels_info_for_probe(current_probe:str, session_data_dict:dict, probe
     # get channel dataframe
     mouse_id = session_data_dict['external_specimen_name']
     probe = current_probe[-1]
+
     day = session_data_dict['stimulus_name'][-1] if session_data_dict['stimulus_name'] is not None else get_day_from_pickle(session)
 
     ccf_alignment_path = pathlib.Path('//allen/programs/mindscope/workgroups/np-behavior/tissuecyte', mouse_id, 
@@ -102,7 +105,7 @@ def get_channels_info_for_probe(current_probe:str, session_data_dict:dict, probe
         sessions = channel_lookup_table['session'].values.tolist()
         channel_ids = channel_lookup_table['index'].values.tolist()
 
-        for i in range(384):
+        for i in range(NUM_CHANNELS):
             max_channel_id += 1
             sessions.append(session.id)
             channel_ids.append(max_channel_id)
@@ -110,8 +113,9 @@ def get_channels_info_for_probe(current_probe:str, session_data_dict:dict, probe
         new_channel_lookup_table['session'] = sessions
         new_channel_lookup_table['index'] = channel_ids
         df_channel_new_lookup_table = pd.DataFrame(new_channel_lookup_table)
-        df_channel_new_lookup_table.to_csv(r"\\allen\programs\mindscope\workgroups\dynamicrouting\dynamic_gating\nwbs\channels_lookup_table.csv",
-                                            index=False)
+        df_channel_new_lookup_table.to_csv(channel_lookup_table_output_path,
+                                            index=False)    
+        channel_ids = df_channel_new_lookup_table[df_channel_new_lookup_table['session'] == session.id]['index'].values
 
     if ccf_alignment_path.exists():
         df_ccf_coords = pd.read_csv(ccf_alignment_path)
@@ -125,6 +129,7 @@ def get_channels_info_for_probe(current_probe:str, session_data_dict:dict, probe
         horizontal_position_odd = [11, 27]
         horizontal_position_odd_index = 0
 
+        # TODO: use positions from settings xml
         for index, row in df_ccf_coords.iterrows():
             if index != 0 and index % 2 == 0:
                 vertical_position += 20
@@ -170,7 +175,7 @@ def get_channels_info_for_probe(current_probe:str, session_data_dict:dict, probe
             #channel_id += 1
     else:
         channel_ids = channel_lookup_table[channel_lookup_table['session'] == session.id]['index'].values
-        for i in range(384):
+        for i in range(NUM_CHANNELS):
             channel_dict = {
                 'probe_id': probe_id,
                 'probe_channel_number': i,
@@ -194,8 +199,138 @@ def get_channels_info_for_probe(current_probe:str, session_data_dict:dict, probe
 
     return channels, channel_start
 
+
+def get_channels_info_for_vbn_opto(current_probe:str, session_data_dict:dict, probe_id:int, session:np_session.Session,
+                                structure_tree:pd.DataFrame, channel_lookup_table:pd.DataFrame, channel_lookup_table_output_path: pathlib.Path,
+                                channel_start:int, probe_in_lookup:bool=True):
+    channels = []
+
+    """
+    if len(id_json_dict['channel_ids']) > 0:
+        channel_id = id_json_dict['channel_ids'][-1] + 1
+    else:
+        channel_id = probe_id
+    """
+    # get channel dataframe
+    mouse_id = session_data_dict['external_specimen_name']
+    probe = current_probe[-1]
+
+    #day = session_data_dict['stimulus_name'][-1] if session_data_dict['stimulus_name'] is not None else get_day_from_pickle(session)
+    day = '1'
+    ccf_alignment_path = pathlib.Path('//allen/programs/mindscope/workgroups/np-behavior/tissuecyte', mouse_id, 
+                                             'Probe_{}_channels_{}_warped_cleaned.csv'.format(probe+day, mouse_id))
+
+    if not ccf_alignment_path.exists():
+        ccf_alignment_path = pathlib.Path('//allen/programs/mindscope/workgroups/np-behavior/tissuecyte', mouse_id, 
+                                             'Probe_{}_channels_{}_warped.csv'.format(probe+day, mouse_id))
+        
+    #channel_ids = channel_lookup_table[channel_lookup_table['session'] == session.id]['index'].values
+    if probe_in_lookup:
+        channel_ids = channel_lookup_table[channel_lookup_table['session'] == session.id]['index'].values
+    else:
+        new_channel_lookup_table = {}
+        max_channel_id = channel_lookup_table['index'].max()
+        sessions = channel_lookup_table['session'].values.tolist()
+        channel_ids = channel_lookup_table['index'].values.tolist()
+
+        for i in range(NUM_CHANNELS):
+            max_channel_id += 1
+            sessions.append(session.id)
+            channel_ids.append(max_channel_id)
+        
+        new_channel_lookup_table['session'] = sessions
+        new_channel_lookup_table['index'] = channel_ids
+        df_channel_new_lookup_table = pd.DataFrame(new_channel_lookup_table)
+        df_channel_new_lookup_table.to_csv(channel_lookup_table_output_path,
+                                            index=False)    
+        channel_ids = df_channel_new_lookup_table[df_channel_new_lookup_table['session'] == session.id]['index'].values
+
+    if ccf_alignment_path.exists():
+        df_ccf_coords = pd.read_csv(ccf_alignment_path)
+
+        ccf_annotation_array = get_annotation_volume()
+
+        vertical_position = 20
+        horizontal_position_even = [43, 59]
+        horizontal_position = horizontal_position_even[0]
+        horizontal_position_even_index = 0
+        horizontal_position_odd = [11, 27]
+        horizontal_position_odd_index = 0
+
+        # TODO: use positions from settings xml
+        for index, row in df_ccf_coords.iterrows():
+            if index != 0 and index % 2 == 0:
+                vertical_position += 20
+            
+            if index == 0:
+                horizontal_position = horizontal_position_even[0]
+            elif index == 1:
+                horizontal_position = horizontal_position_odd[0]
+            elif index != 0 and index % 2 == 0:
+                if horizontal_position_even_index == 0:
+                    horizontal_position_even_index = 1
+                    horizontal_position = horizontal_position_even[horizontal_position_even_index]
+                else:
+                    horizontal_position_even_index = 0
+                    horizontal_position = horizontal_position_even[horizontal_position_even_index]
+            elif index != 1 and index % 1 == 0:
+                if horizontal_position_odd_index == 0:
+                    horizontal_position_odd_index = 1
+                    horizontal_position = horizontal_position_odd[horizontal_position_odd_index]
+                else:
+                    horizontal_position_odd_index = 0
+                    horizontal_position = horizontal_position_odd[horizontal_position_odd_index]
+
+            channel_dict = {
+                'probe_id': probe_id,
+                'probe_channel_number': row.channel,
+                'structure_id': int(ccf_annotation_array[row.AP, row.DV, row.ML]),
+                'structure_acronym': strip_subregions_layers(row.region, structure_tree),
+                'structure_layer': clean_region(row.region),
+                'anterior_posterior_ccf_coordinate': row.AP*25,
+                'dorsal_ventral_ccf_coordinate': row.DV*25,
+                'left_right_ccf_coordinate': row.ML*25,
+                'probe_horizontal_position': horizontal_position,
+                'probe_vertical_position': vertical_position,
+                'id': int(channel_ids[channel_start]),
+                'valid_data': True
+            }
+
+            channels.append(channel_dict)
+            channel_start += 1
+            #id_json_dict['channel_ids'].append(channel_id)
+
+            #channel_id += 1
+    else:
+        channel_ids = channel_lookup_table[channel_lookup_table['session'] == session.id]['index'].values
+        for i in range(NUM_CHANNELS):
+            channel_dict = {
+                'probe_id': probe_id,
+                'probe_channel_number': i,
+                'structure_id': -1,
+                'structure_acronym': 'Track not annotated',
+                'structure_layer': 'Track not annotated',
+                'anterior_posterior_ccf_coordinate': -1,
+                'dorsal_ventral_ccf_coordinate': -1,
+                'left_right_ccf_coordinate': -1,
+                'probe_horizontal_position': -1,
+                'probe_vertical_position': -1,
+                'id': int(channel_ids[i]),
+                'valid_data': True
+            }
+
+            channels.append(channel_dict)
+            channel_start += 1
+            #id_json_dict['channel_ids'].append(channel_id)
+
+            #channel_id += 1
+
+    return channels, channel_start
+    
+
 def get_units_info_for_probe(current_probe:str, session:np_session.Session, channels:list[dict], isi_areas:pd.DataFrame, structure_tree:pd.DataFrame,
-                             units_lookup_table:pd.DataFrame, unit_start:int, probe_in_lookup:bool=True):
+                             units_lookup_table:pd.DataFrame, units_lookup_table_output_path:pathlib.Path,
+                             unit_start:int, probe_in_lookup:bool=True):
     metrics_csv_files = session.metrics_csv
     probe_metrics_csv_file = [metrics_file for metrics_file in metrics_csv_files if current_probe in metrics_file.as_posix()][0]
     print(probe_metrics_csv_file)
@@ -231,8 +366,9 @@ def get_units_info_for_probe(current_probe:str, session:np_session.Session, chan
         new_unit_lookup_table['session'] = sessions
         new_unit_lookup_table['index'] = units_ids
         df_new_unit_lookup_table = pd.DataFrame(new_unit_lookup_table)
-        df_new_unit_lookup_table.to_csv(r"\\allen\programs\mindscope\workgroups\dynamicrouting\dynamic_gating\nwbs\units_lookup_table.csv",
+        df_new_unit_lookup_table.to_csv(units_lookup_table_output_path,
                                         index=False)
+        units_ids = df_new_unit_lookup_table[df_new_unit_lookup_table['session'] == session.id].values
         
     for index, row in df_metrics.iterrows():
         if len(isi_areas_session_probe) > 0:
@@ -451,8 +587,10 @@ def get_csd_information(current_probe:str, module_parameters:dict) -> Union[str,
         return None
 
 def generate_nwb_input_json(module_parameters:dict, session:np_session.Session, isi_areas:pd.DataFrame, structure_tree: pd.DataFrame,
-                             probe_id:int, channel_lookup_table:pd.DataFrame, units_lookup_table:pd.DataFrame, 
-                             channel_start:int, unit_start:int, non_doc=False, probe_in_lookup=True):
+                             probe_id:int, channel_lookup_table:pd.DataFrame, channel_lookup_table_output_path: pathlib.Path,
+                             units_lookup_table:pd.DataFrame, units_lookup_table_output_path: pathlib.Path,
+                             channel_start:int, unit_start:int, non_doc=False, probe_in_lookup=True, is_dynamic_gating=False,
+                             is_vbn_opto=False):
     current_probe = module_parameters['current_probe']
     output_path = pathlib.Path(module_parameters['nwb_path'], str(module_parameters['session_id']))
     check_and_make_output_path(output_path)
@@ -509,10 +647,19 @@ def generate_nwb_input_json(module_parameters:dict, session:np_session.Session, 
 
     #id_json_dict['probe_ids'].append(probe_id)
 
-    channels, channel_start = get_channels_info_for_probe(current_probe, session_data_dict, probe_id, session, structure_tree, channel_lookup_table,
-                                           channel_start, probe_in_lookup=probe_in_lookup)
+    if is_dynamic_gating:
+        channels, channel_start = get_channels_info_for_probe(current_probe, session_data_dict, probe_id, session, structure_tree, 
+                                                            channel_lookup_table, channel_lookup_table_output_path,
+                                            channel_start, probe_in_lookup=probe_in_lookup)
+    
+    if is_vbn_opto:
+        channels, channel_start = get_channels_info_for_probe(current_probe, session_data_dict, probe_id, session, structure_tree, 
+                                                            channel_lookup_table, channel_lookup_table_output_path,
+                                            channel_start, probe_in_lookup=probe_in_lookup)
+
     probe_dict['channels'] = channels
-    units, unit_start = get_units_info_for_probe(current_probe, session, channels, isi_areas, structure_tree, units_lookup_table,
+    units, unit_start = get_units_info_for_probe(current_probe, session, channels, isi_areas, structure_tree, 
+                                                 units_lookup_table, units_lookup_table_output_path,
                                      unit_start, probe_in_lookup=probe_in_lookup)
     probe_dict['units'] = units
 
