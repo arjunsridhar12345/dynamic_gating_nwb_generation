@@ -14,6 +14,7 @@ from dateutil import parser
 from psycopg2 import connect, extras
 from typing import Union
 from ccf_utils import list_parents
+import datetime
 
 NUM_CHANNELS = 384
 
@@ -97,7 +98,7 @@ def get_channels_info_for_probe(current_probe:str, session_data_dict:dict, probe
                                              'Probe_{}_channels_{}_warped.csv'.format(probe+day, mouse_id))
         
     #channel_ids = channel_lookup_table[channel_lookup_table['session'] == session.id]['index'].values
-    if probe_in_lookup:
+    if len(channel_lookup_table) > 0 and probe_in_lookup:
         channel_ids = channel_lookup_table[channel_lookup_table['session'] == session.id]['index'].values
     else:
         new_channel_lookup_table = {}
@@ -225,13 +226,18 @@ def get_channels_info_for_vbn_opto(current_probe:str, session_data_dict:dict, pr
                                              'Probe_{}_channels_{}_warped.csv'.format(probe+day, mouse_id))
         
     #channel_ids = channel_lookup_table[channel_lookup_table['session'] == session.id]['index'].values
-    if probe_in_lookup:
+    if len(channel_lookup_table) > 0 and probe_in_lookup:
         channel_ids = channel_lookup_table[channel_lookup_table['session'] == session.id]['index'].values
     else:
         new_channel_lookup_table = {}
-        max_channel_id = channel_lookup_table['index'].max()
-        sessions = channel_lookup_table['session'].values.tolist()
-        channel_ids = channel_lookup_table['index'].values.tolist()
+        if len(channel_lookup_table) > 0:
+            max_channel_id = channel_lookup_table['index'].max()
+            sessions = channel_lookup_table['session'].values.tolist()
+            channel_ids = channel_lookup_table['index'].values.tolist()
+        else:
+            max_channel_id = -1
+            sessions = []
+            channel_ids = []
 
         for i in range(NUM_CHANNELS):
             max_channel_id += 1
@@ -302,7 +308,7 @@ def get_channels_info_for_vbn_opto(current_probe:str, session_data_dict:dict, pr
 
             #channel_id += 1
     else:
-        channel_ids = channel_lookup_table[channel_lookup_table['session'] == session.id]['index'].values
+        #channel_ids = channel_lookup_table[channel_lookup_table['session'] == session.id]['index'].values
         for i in range(NUM_CHANNELS):
             channel_dict = {
                 'probe_id': probe_id,
@@ -315,7 +321,7 @@ def get_channels_info_for_vbn_opto(current_probe:str, session_data_dict:dict, pr
                 'left_right_ccf_coordinate': -1,
                 'probe_horizontal_position': -1,
                 'probe_vertical_position': -1,
-                'id': int(channel_ids[i]),
+                'id': int(channel_ids[channel_start]),
                 'valid_data': True
             }
 
@@ -350,13 +356,18 @@ def get_units_info_for_probe(current_probe:str, session:np_session.Session, chan
                                                  & (isi_areas['Probe'] == current_probe[-1])]
 
     #units_ids = units_lookup_table[units_lookup_table['session'] == session.id]['index'].values
-    if probe_in_lookup:
+    if len(units_lookup_table) > 0 and probe_in_lookup:
         units_ids = units_lookup_table[units_lookup_table['session'] == session.id]['index'].values
     else:
         new_unit_lookup_table = {}
-        max_unit_id = units_lookup_table['index'].max()
-        sessions = units_lookup_table['session'].values.tolist()
-        units_ids = units_lookup_table['index'].values.tolist()
+        if len(units_lookup_table) > 0:
+            max_unit_id = units_lookup_table['index'].max()
+            sessions = units_lookup_table['session'].values.tolist()
+            units_ids = units_lookup_table['index'].values.tolist()
+        else:
+            max_unit_id = -1
+            sessions = []
+            units_ids = []
 
         for i in range(len(df_metrics)):
             max_unit_id += 1
@@ -368,7 +379,7 @@ def get_units_info_for_probe(current_probe:str, session:np_session.Session, chan
         df_new_unit_lookup_table = pd.DataFrame(new_unit_lookup_table)
         df_new_unit_lookup_table.to_csv(units_lookup_table_output_path,
                                         index=False)
-        units_ids = df_new_unit_lookup_table[df_new_unit_lookup_table['session'] == session.id].values
+        units_ids = df_new_unit_lookup_table[df_new_unit_lookup_table['session'] == session.id]['index'].values
         
     for index, row in df_metrics.iterrows():
         if len(isi_areas_session_probe) > 0:
@@ -425,6 +436,9 @@ def get_units_info_for_probe(current_probe:str, session:np_session.Session, chan
     return units, unit_start
 
 def get_mouse_age(session_mouse_lims:dict):
+    if session_mouse_lims['death_on'] is None:
+        return session_mouse_lims['age_in_days']
+    
     return (parser.parse(session_mouse_lims['death_on']) - parser.parse(session_mouse_lims['date_of_birth'])).days
 
 def get_mouse_gender(session_mouse_lims:dict):
@@ -496,7 +510,8 @@ def get_reporter_line(session_mouse_lims:dict):
         else:
             return full_genotype[full_genotype.index('/')+1:full_genotype.rindex('/')]
 
-def get_session_data(session:np_session.Session, module_parameters:dict, non_doc=False):
+def get_session_data(session:np_session.Session, module_parameters:dict, non_doc=False, is_dynamic_gating:bool=False,
+                     is_vbn_opto:bool=False) -> dict:
     session_data_dict = session.data_dict
     session_mouse_lims = session.mouse.lims.info_from_lims()
     npexp_path = session.npexp_path
@@ -507,7 +522,6 @@ def get_session_data(session:np_session.Session, module_parameters:dict, non_doc
 
     session_data = {
         'behavior_session_id': get_behavior_session_id(session_mouse_lims, session_data_dict['es_id'], behavior_pickle_path),
-        'death_on': str(session_mouse_lims['death_on']),
         'date_of_acquisition': str(session_data_dict['date_of_acquisition']),
         'rig_name': session_data_dict['rig'],
         'external_specimen_name': session_data_dict['external_specimen_name'],
@@ -517,15 +531,15 @@ def get_session_data(session:np_session.Session, module_parameters:dict, non_doc
         'age': 'P{}'.format(str(get_mouse_age(session_mouse_lims))),
         'ecephys_session_id': str(session_data_dict['es_id']),
         'behavior_stimulus_file': behavior_pickle_path if not non_doc else non_doc_behavior_pickle_path,
-        'mapping_stimulus_file': pathlib.Path(npexp_path, '{}.mapping.pkl'.format(npexp_path.as_posix()[npexp_path.as_posix().rindex('/')+1:])).as_posix(),#session_data_dict['MappingPickle'].as_posix(),
+        #'mapping_stimulus_file': pathlib.Path(npexp_path, '{}.mapping.pkl'.format(npexp_path.as_posix()[npexp_path.as_posix().rindex('/')+1:])).as_posix(),#session_data_dict['MappingPickle'].as_posix(),
         'raw_eye_tracking_video_meta_data': session_data_dict['RawEyeTrackingVideoMetadata'].as_posix(),
         #'eye_dlc_file': session_data_dict['EyeDlcOutputFile'].as_posix() if 'EyeDlcOutputFile' in session_data_dict else None,
         #'face_dlc_file': session_data_dict['FaceDlcOutputFile'].as_posix() if 'FaceDlcOutputFile' in session_data_dict else None,
         #'side_dlc_file': session_data_dict['SideDlcOutputFile'].as_posix() if 'SideDlcOutputFile' in session_data_dict else None, 
         'eye_tracking_filepath': session_data_dict['EyeTracking Ellipses'].as_posix(),
         'sync_file': pathlib.Path(npexp_path, '{}.sync'.format(npexp_path.as_posix()[npexp_path.as_posix().rindex('/')+1:])).as_posix(), #session_data_dict['sync_file'].as_posix(),
-        'stim_table_file': pathlib.Path(module_parameters['output_path'], 'Dynamic_Gating_stimulus_table.csv').as_posix(), 
-        'optotagging_table_path': pathlib.Path(module_parameters['output_path'], 'optotagging_table.csv').as_posix(),
+        #'stim_table_file': pathlib.Path(module_parameters['output_path'], 'Dynamic_Gating_stimulus_table.csv').as_posix(), 
+        #'optotagging_table_path': pathlib.Path(module_parameters['output_path'], 'optotagging_table.csv').as_posix(),
         'driver_line': [
           get_driver_line(session_mouse_lims)
         ],
@@ -561,6 +575,17 @@ def get_session_data(session:np_session.Session, module_parameters:dict, non_doc
           'equipment': session_data_dict['rig']
         }
     }
+
+    if session_mouse_lims['death_on'] is not None:
+        session_data['death_on'] = str(session_mouse_lims['death_on'])
+
+    if is_dynamic_gating:
+        session_data['mapping_stimulus_file'] = pathlib.Path(npexp_path, '{}.mapping.pkl'.format(npexp_path.as_posix()[npexp_path.as_posix().rindex('/')+1:])).as_posix()
+        session_data['optotagging_table_path'] = pathlib.Path(module_parameters['output_path'], 'optotagging_table.csv').as_posix()
+        session_data['stim_table_file'] = pathlib.Path(module_parameters['output_path'], 'Dynamic_Gating_stimulus_table.csv').as_posix()
+    
+    if is_vbn_opto:
+        session_data['stim_table_file'] = pathlib.Path(module_parameters['output_path'], 'VBN_Opto_stimulus_table.csv').as_posix()
 
     return session_data
 
@@ -653,7 +678,7 @@ def generate_nwb_input_json(module_parameters:dict, session:np_session.Session, 
                                             channel_start, probe_in_lookup=probe_in_lookup)
     
     if is_vbn_opto:
-        channels, channel_start = get_channels_info_for_probe(current_probe, session_data_dict, probe_id, session, structure_tree, 
+        channels, channel_start = get_channels_info_for_vbn_opto(current_probe, session_data_dict, probe_id, session, structure_tree, 
                                                             channel_lookup_table, channel_lookup_table_output_path,
                                             channel_start, probe_in_lookup=probe_in_lookup)
 
@@ -675,7 +700,8 @@ def generate_nwb_input_json(module_parameters:dict, session:np_session.Session, 
             'log_level': 'INFO',
             'output_path': nwb_path,
         }
-        session_data = get_session_data(session, module_parameters, non_doc=non_doc)
+        session_data = get_session_data(session, module_parameters, non_doc=non_doc, is_dynamic_gating=is_dynamic_gating,
+                                        is_vbn_opto=is_vbn_opto)
         session_data['probes'] = module_parameters['probe_dict_list']
 
         input_json_write_dict['session_data'] = session_data

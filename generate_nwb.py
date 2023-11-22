@@ -17,32 +17,42 @@ def log_subprocess_output(pipe):
     for line in iter(pipe.readline, b''): # b'\n'-separated lines
         logging.info('got line from subprocess: %r', line)
 
-def run_nwb_pipeline(session:str, non_doc=False):
+def run_nwb_pipeline(session:str, non_doc=False, is_dynamic_gating:bool=False, is_vbn_opto:bool=False):
     session_errors:dict = {session:[]}
-    generate_sdk_modules(session, non_doc)
+    #generate_sdk_modules(session, non_doc)
 
     json_directory = pathlib.Path('//allen/programs/mindscope/workgroups/np-exp', session, 'SDK_jsons')
 
     #align_timestamps_module = 'python -m allensdk.brain_observatory.ecephys.align_timestamps --input_json {} --output_json {}'.format(pathlib.Path(json_directory, 'align_timestamps_generated_input.json').as_posix(),
                                                                                                                                       #pathlib.Path(json_directory, 'align_timestamps_generated_output.json').as_posix())
     
-    stimulus_table_module = 'python -m ecephys_etl.modules.dynamic_gating_create_stim_table --input_json {} --output_json {}'.format(pathlib.Path(json_directory, 'stimulus_table_input.json').as_posix(),
-                                                                                                                         pathlib.Path(json_directory, 'stimulus_table_output.json').as_posix())
+    if is_dynamic_gating:
+        stimulus_table_module = 'python -m ecephys_etl.modules.dynamic_gating_create_stim_table --input_json {} --output_json {}'.format(pathlib.Path(json_directory, 'stimulus_table_input.json').as_posix(),
+                                                                                                                  pathlib.Path(json_directory, 'stimulus_table_output.json').as_posix())
+    
+    if is_vbn_opto:
+        stimulus_table_module = 'python -m ecephys_etl.modules.vbn_opto_stimulus_table --input_json {} --output_json {}'.format(pathlib.Path(json_directory, 'stimulus_table_input.json').as_posix(),
+                                                                                                                        pathlib.Path(json_directory, 'stimulus_table_output.json').as_posix())
+    
     stimulus_table_response = subprocess.run(stimulus_table_module, shell=True, text=True, capture_output=True)
     session_errors[session].append(stimulus_table_response.stderr)
 
-    optotagging_module = 'python -m allensdk.brain_observatory.ecephys.optotagging_table --input_json {} --output_json {}'.format(pathlib.Path(json_directory, 'optotagging_input.json').as_posix(),
+    if is_dynamic_gating:
+        optotagging_module = 'python -m allensdk.brain_observatory.ecephys.optotagging_table --input_json {} --output_json {}'.format(pathlib.Path(json_directory, 'optotagging_input.json').as_posix(),
                                                                                                                             pathlib.Path(json_directory, 'optotagging_output.json').as_posix())
-    opto_response = subprocess.run(optotagging_module, shell=True, text=True, capture_output=True)
-    session_errors[session].append(opto_response.stderr)
+        opto_response = subprocess.run(optotagging_module, shell=True, text=True, capture_output=True)
+        session_errors[session].append(opto_response.stderr)
 
-    nwb_module = 'python -m allensdk.brain_observatory.ecephys.write_nwb.dynamic_gating --input_json {} --output_json {}'.format(pathlib.Path(json_directory, 'nwb_input.json').as_posix(),
-                                                                                                                                pathlib.Path(json_directory, 'nwb_output.json').as_posix())
-    
+    if is_dynamic_gating:
+        nwb_module = 'python -m allensdk.brain_observatory.ecephys.write_nwb.dynamic_gating --input_json {} --output_json {}'.format(pathlib.Path(json_directory, 'nwb_input.json').as_posix(),
+                                                                                                                                    pathlib.Path(json_directory, 'nwb_output.json').as_posix())
+    if is_vbn_opto:
+        nwb_module = 'python -m allensdk.brain_observatory.ecephys.write_nwb.vbn_opto --input_json {} --output_json {}'.format(pathlib.Path(json_directory, 'nwb_input.json').as_posix(),
+                                                                                                                                    pathlib.Path(json_directory, 'nwb_output.json').as_posix())
     nwb_response = subprocess.run(nwb_module, shell=True, text=True)
     session_errors[session].append(nwb_response.stderr)
 
-    with open('./session_errors_with_lfp.json', 'a') as f:
+    with open('./session_errors.json', 'a') as f:
         json.dump(session_errors, f, indent=2)
         f.write('\n\n')
 
@@ -102,14 +112,14 @@ if __name__ == '__main__':
             if len(list(nwb_session_directory.glob('*'))) > 0 and '607660' not in non_doc_experiment:
                 run_nwb_pipeline(non_doc_experiment)
     """
-    sessions = ['1173741216_604914_20220428']
+    sessions = ['1309245241_689656_20231107']
 
     for session in sessions:
         print(session)
         if session in non_doc_experiments:
             run_nwb_pipeline(session, non_doc=True)
         else:
-            run_nwb_pipeline(session)
+            run_nwb_pipeline(session, is_vbn_opto=True)
     
     """
     for experiment in experiments:

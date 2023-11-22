@@ -1,0 +1,179 @@
+{
+  "1308220034_669188_20231102": [
+    "Traceback (most recent call last):\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\runpy.py\", line 197, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\runpy.py\", line 87, in _run_code\n    exec(code, run_globals)\n  File \"c:\\users\\arjun.sridhar\\source\\repos\\ecephys_etl_pipelines\\src\\ecephys_etl\\modules\\vbn_opto_stimulus_table\\__main__.py\", line 48, in <module>\n    stim_table_maker.run()\n  File \"c:\\users\\arjun.sridhar\\source\\repos\\ecephys_etl_pipelines\\src\\ecephys_etl\\modules\\vbn_opto_stimulus_table\\__main__.py\", line 31, in run\n    stim_table: pd.DataFrame = create_stim_table(\nTypeError: 'module' object is not callable\n"
+  ]
+}
+
+{
+  "1308220034_669188_20231102": [
+    "Traceback (most recent call last):\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\runpy.py\", line 197, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\runpy.py\", line 87, in _run_code\n    exec(code, run_globals)\n  File \"c:\\users\\arjun.sridhar\\source\\repos\\ecephys_etl_pipelines\\src\\ecephys_etl\\modules\\vbn_opto_stimulus_table\\__main__.py\", line 48, in <module>\n    stim_table_maker.run()\n  File \"c:\\users\\arjun.sridhar\\source\\repos\\ecephys_etl_pipelines\\src\\ecephys_etl\\modules\\vbn_opto_stimulus_table\\__main__.py\", line 31, in run\n    stim_table: pd.DataFrame = create_vbn_opto_stimulus_table(\n  File \"c:\\users\\arjun.sridhar\\source\\repos\\ecephys_etl_pipelines\\src\\ecephys_etl\\modules\\vbn_opto_stimulus_table\\create_stim_table.py\", line 1243, in create_vbn_opto_stimulus_table\n    frame_counts = [\nTypeError: 'BehaviorPickleFile' object is not iterable\n"
+  ]
+}
+
+{
+  "1308220034_669188_20231102": [
+    ""
+  ]
+}
+
+{
+  "1308220034_669188_20231102": [
+    "",
+    null
+  ]
+}
+
+{
+  "1308220034_669188_20231102": [
+    "",
+    null
+  ]
+}
+
+{
+  "1308220034_669188_20231102": [
+    "",
+    null
+  ]
+}
+
+{
+  "1308220034_669188_20231102": [
+    "",
+    null
+  ]
+}
+
+{
+  "1308220034_669188_20231102": [
+    "",
+    null
+  ]
+}
+
+{
+  "1308220034_669188_20231102": [
+    "",
+    null
+  ]
+}
+
+{
+  "1308220034_669188_20231102": [
+    "",
+    null
+  ]
+}
+
+{
+  "1308220034_669188_20231102": [
+    "",
+    null
+  ]
+}
+
+{
+  "1308220034_669188_20231102": [
+    "",
+    null
+  ]
+}
+
+{
+  "1308220034_669188_20231102": [
+    "",
+    null
+  ]
+}
+
+{
+  "1308220034_669188_20231102": [
+    "",
+    null
+  ]
+}
+
+{
+  "1308220034_669188_20231102": [
+    "",
+    null
+  ]
+}
+
+{
+  "1308220034_669188_20231102": [
+    "",
+    null
+  ]
+}
+
+{
+  "1308220034_669188_20231102": [
+    "",
+    null
+  ]
+}
+
+{
+  "1308220034_669188_20231102": [
+    "",
+    null
+  ]
+}
+
+{
+  "1309564226_689656_20231108": [
+    "",
+    null
+  ]
+}
+
+{
+  "1309564226_689656_20231108": [
+    "",
+    null
+  ]
+}
+
+{
+  "1309564226_689656_20231108": [
+    "",
+    null
+  ]
+}
+
+{
+  "1309564226_689656_20231108": [
+    "Traceback (most recent call last):\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\runpy.py\", line 197, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\runpy.py\", line 87, in _run_code\n    exec(code, run_globals)\n  File \"c:\\users\\arjun.sridhar\\source\\repos\\ecephys_etl_pipelines\\src\\ecephys_etl\\modules\\vbn_opto_stimulus_table\\__main__.py\", line 48, in <module>\n    stim_table_maker.run()\n  File \"c:\\users\\arjun.sridhar\\source\\repos\\ecephys_etl_pipelines\\src\\ecephys_etl\\modules\\vbn_opto_stimulus_table\\__main__.py\", line 36, in run\n    stim_table.to_csv(path_or_buf=output_path, index=False)\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\pandas\\util\\_decorators.py\", line 211, in wrapper\n    return func(*args, **kwargs)\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\pandas\\core\\generic.py\", line 3720, in to_csv\n    return DataFrameRenderer(formatter).to_csv(\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\pandas\\util\\_decorators.py\", line 211, in wrapper\n    return func(*args, **kwargs)\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\pandas\\io\\formats\\format.py\", line 1189, in to_csv\n    csv_formatter.save()\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\pandas\\io\\formats\\csvs.py\", line 241, in save\n    with get_handle(\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\pandas\\io\\common.py\", line 856, in get_handle\n    handle = open(\nPermissionError: [Errno 13] Permission denied: '//allen/programs/mindscope/workgroups/np-exp/1309564226_689656_20231108/SDK_outputs/VBN_Opto_stimulus_table.csv'\n",
+    null
+  ]
+}
+
+{
+  "1309564226_689656_20231108": [
+    "Traceback (most recent call last):\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\runpy.py\", line 197, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\runpy.py\", line 87, in _run_code\n    exec(code, run_globals)\n  File \"c:\\users\\arjun.sridhar\\source\\repos\\ecephys_etl_pipelines\\src\\ecephys_etl\\modules\\vbn_opto_stimulus_table\\__main__.py\", line 48, in <module>\n    stim_table_maker.run()\n  File \"c:\\users\\arjun.sridhar\\source\\repos\\ecephys_etl_pipelines\\src\\ecephys_etl\\modules\\vbn_opto_stimulus_table\\__main__.py\", line 36, in run\n    stim_table.to_csv(path_or_buf=output_path, index=False)\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\pandas\\util\\_decorators.py\", line 211, in wrapper\n    return func(*args, **kwargs)\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\pandas\\core\\generic.py\", line 3720, in to_csv\n    return DataFrameRenderer(formatter).to_csv(\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\pandas\\util\\_decorators.py\", line 211, in wrapper\n    return func(*args, **kwargs)\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\pandas\\io\\formats\\format.py\", line 1189, in to_csv\n    csv_formatter.save()\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\pandas\\io\\formats\\csvs.py\", line 241, in save\n    with get_handle(\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\pandas\\io\\common.py\", line 856, in get_handle\n    handle = open(\nPermissionError: [Errno 13] Permission denied: '//allen/programs/mindscope/workgroups/np-exp/1309564226_689656_20231108/SDK_outputs/VBN_Opto_stimulus_table.csv'\n",
+    null
+  ]
+}
+
+{
+  "1309564226_689656_20231108": [
+    "Traceback (most recent call last):\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\runpy.py\", line 197, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\runpy.py\", line 87, in _run_code\n    exec(code, run_globals)\n  File \"c:\\users\\arjun.sridhar\\source\\repos\\ecephys_etl_pipelines\\src\\ecephys_etl\\modules\\vbn_opto_stimulus_table\\__main__.py\", line 48, in <module>\n    stim_table_maker.run()\n  File \"c:\\users\\arjun.sridhar\\source\\repos\\ecephys_etl_pipelines\\src\\ecephys_etl\\modules\\vbn_opto_stimulus_table\\__main__.py\", line 36, in run\n    stim_table.to_csv(path_or_buf=output_path, index=False)\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\pandas\\util\\_decorators.py\", line 211, in wrapper\n    return func(*args, **kwargs)\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\pandas\\core\\generic.py\", line 3720, in to_csv\n    return DataFrameRenderer(formatter).to_csv(\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\pandas\\util\\_decorators.py\", line 211, in wrapper\n    return func(*args, **kwargs)\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\pandas\\io\\formats\\format.py\", line 1189, in to_csv\n    csv_formatter.save()\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\pandas\\io\\formats\\csvs.py\", line 241, in save\n    with get_handle(\n  File \"C:\\Users\\arjun.sridhar\\Anaconda3\\envs\\stim_table_env\\lib\\site-packages\\pandas\\io\\common.py\", line 856, in get_handle\n    handle = open(\nPermissionError: [Errno 13] Permission denied: '//allen/programs/mindscope/workgroups/np-exp/1309564226_689656_20231108/SDK_outputs/VBN_Opto_stimulus_table.csv'\n",
+    null
+  ]
+}
+
+{
+  "1308220034_669188_20231102": [
+    "",
+    null
+  ]
+}
+
+{
+  "1309245241_689656_20231107": [
+    "",
+    null
+  ]
+}
+
