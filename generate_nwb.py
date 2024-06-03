@@ -17,10 +17,10 @@ def log_subprocess_output(pipe):
     for line in iter(pipe.readline, b''): # b'\n'-separated lines
         logging.info('got line from subprocess: %r', line)
 
-def run_nwb_pipeline(session:str, non_doc=False, is_dynamic_gating:bool=False, is_vbn_opto:bool=False):
+def run_nwb_pipeline(session:str, non_doc=False, is_dynamic_gating:bool=False, is_vbn_opto:bool=False, scale=1):
     session_errors:dict = {session:[]}
-    #generate_sdk_modules(session, non_doc)
-
+    generate_sdk_modules(session, is_dynamic_gating=is_dynamic_gating, non_doc=non_doc, scale=scale)
+    
     json_directory = pathlib.Path('//allen/programs/mindscope/workgroups/np-exp', session, 'SDK_jsons')
 
     #align_timestamps_module = 'python -m allensdk.brain_observatory.ecephys.align_timestamps --input_json {} --output_json {}'.format(pathlib.Path(json_directory, 'align_timestamps_generated_input.json').as_posix(),
@@ -99,37 +99,35 @@ if __name__ == '__main__':
     doc_experiments = dynamic_gating_spreadsheet.loc[dynamic_gating_spreadsheet['pkl_format'] == 'DoC']['exp_id'].values
     non_doc_experiments = dynamic_gating_spreadsheet.loc[dynamic_gating_spreadsheet['pkl_format'] == 'non-DoC']['exp_id'].values
     empty_sessions = get_empty_sessions()
-    """
-    for experiment in experiments:
-        if experiment in non_doc_experiments:
-            run_nwb_pipeline(experiment, non_doc=True)
-        else:
-            run_nwb_pipeline(experiment)
     
-    for non_doc_experiment in non_doc_experiments:
-        nwb_session_directory = pathlib.Path(nwb_directory, non_doc_experiment[0:non_doc_experiment.index('_')])
-        if nwb_session_directory.exists():
-            if len(list(nwb_session_directory.glob('*'))) > 0 and '607660' not in non_doc_experiment:
-                run_nwb_pipeline(non_doc_experiment)
-    """
-    sessions = ['1309245241_689656_20231107']
-
-    for session in sessions:
-        print(session)
-        if session in non_doc_experiments:
-            run_nwb_pipeline(session, non_doc=True)
-        else:
-            run_nwb_pipeline(session, is_vbn_opto=True)
+    session_ids_rescaled= [1174553025, 1174790219, 1175067685, 1175253205, 1176580734,
+       1176791184, 1176989662, 1177900858, 1178173272, 1178460518,
+       1178693650, 1179670730, 1179911454, 1180107381, 1180266229,
+       1181096406, 1181324124, 1181731440, 1182427414, 1182628226,
+       1182871514, 1183071525]
     
-    """
+    sessions_rescaled = ['1174553025_608672_20220502' ,'1174790219_608672_20220503', '1175067685_608672_20220504', '1175253205_608672_20220505', 
+                '1176580734_611160_20220511', '1176791184_611160_20220512', '1176989662_611160_20220513',
+                '1177900858_608671_20220517', '1178173272_608671_20220518', '1178460518_608671_20220519', 
+                '1178693650_608671_20220520', '1179670730_612090_20220524', '1179911454_612090_20220525', '1180107381_612090_20220526',
+                '1180266229_612090_20220527', '1181096406_614547_20220531', '1181324124_614547_20220601',
+                '1181731440_614547_20220603', '1182427414_607660_20220606', '1182628226_607660_20220607', '1182871514_607660_20220608',
+                '1183071525_607660_20220609']
+    
     for experiment in experiments:
         nwb_session_directory = pathlib.Path(nwb_directory, experiment[0:experiment.index('_')])
         if nwb_session_directory.exists():
                 if len(list(nwb_session_directory.glob('*.nwb'))) > 0:
                     print(experiment)
                     if experiment in non_doc_experiments:
-                        run_nwb_pipeline(experiment, non_doc=True)
+                        if experiment in sessions_rescaled:
+                            run_nwb_pipeline(experiment, non_doc=True, is_dynamic_gating=True, scale=2)
+                        else:
+                            run_nwb_pipeline(experiment, non_doc=True, is_dynamic_gating=True)
                     else:
-                        run_nwb_pipeline(experiment)
-    """
+                        if experiment in sessions_rescaled:
+                            run_nwb_pipeline(experiment, is_dynamic_gating=True, scale=2)
+                        else:
+                            run_nwb_pipeline(experiment, is_dynamic_gating=True)
+    
     

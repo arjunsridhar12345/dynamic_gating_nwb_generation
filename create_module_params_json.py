@@ -182,7 +182,7 @@ def save_running_speed_json(session_parameters:dict):
 
 def save_nwb_json(session_parameters: dict, session:np_session.Session, probe_lookup_table_path:pathlib.Path, 
                   channel_lookup_table_path: pathlib.Path, units_lookup_table_path: pathlib.Path,
-                  non_doc=False, is_dynamic_gating=False, is_vbn_opto=False):
+                  non_doc=False, is_dynamic_gating=False, is_vbn_opto=False, scale=1):
     structure_tree = pd.read_csv(r"\\allen\programs\mindscope\workgroups\dynamicrouting\dynamic_gating_insertions\ccf_structure_tree_2017.csv")
     isi_areas = pd.read_excel(pathlib.Path('//allen/programs/mindscope/workgroups/dynamicrouting/dynamic_gating/dg_vis_areas_hmc_071223.xlsx'))
 
@@ -243,7 +243,7 @@ def save_nwb_json(session_parameters: dict, session:np_session.Session, probe_lo
                                                                  channel_start, unit_start,
                                                                  non_doc=non_doc, probe_in_lookup=probe_in_lookup,
                                                                  is_dynamic_gating=is_dynamic_gating,
-                                                                 is_vbn_opto=is_vbn_opto)
+                                                                 is_vbn_opto=is_vbn_opto, scale=scale)
 
         output_dir_path = pathlib.Path(session_parameters['base_directory'], 'SDK_outputs', probe)
         if not output_dir_path.exists():
@@ -255,7 +255,7 @@ def save_nwb_json(session_parameters: dict, session:np_session.Session, probe_lo
     with open(pathlib.Path(session_parameters['input_json_path'], 'nwb_input.json'), 'w') as f:
         json.dump(input_json, f, indent=2)
 
-def generate_sdk_modules(session_str: str, is_dynamic_gating=False, is_vbn_opto=False, non_doc=False):
+def generate_sdk_modules(session_str: str, is_dynamic_gating=False, is_vbn_opto=False, non_doc=False, scale=1):
     vbn_lookup_base_path = pathlib.Path('//allen/scratch/aibstemp/arjun.sridhar/vbn_opto_nwbs')
     if not vbn_lookup_base_path.exists():
         vbn_lookup_base_path.mkdir()
@@ -263,14 +263,14 @@ def generate_sdk_modules(session_str: str, is_dynamic_gating=False, is_vbn_opto=
     session = np_session.Session(session_str)
     session_parameters = generate_session_parameters(session, is_dynamic_gating=is_dynamic_gating, is_vbn_opto=is_vbn_opto)
 
-    lfp_timestamps_generation(session_parameters)
+    #lfp_timestamps_generation(session_parameters)
     #save_lfp_subsampling_json(session_parameters)
-    save_align_timestamps_json(session_parameters)
-    run_align_timestamps(session_str)
-    if is_dynamic_gating:
-        save_optotagging_json(session_parameters)
+    #save_align_timestamps_json(session_parameters)
+    #run_align_timestamps(session_str)
+    #if is_dynamic_gating:
+     #   save_optotagging_json(session_parameters)
     
-    save_stimulus_table_json(session_parameters, non_doc=non_doc, is_dynamic_gating=is_dynamic_gating, is_vbn_opto=is_vbn_opto)
+    #save_stimulus_table_json(session_parameters, non_doc=non_doc, is_dynamic_gating=is_dynamic_gating, is_vbn_opto=is_vbn_opto)
     #save_current_source_density_json(session_parameters)
     if is_dynamic_gating:
         probe_lookup_table_path = pathlib.Path('//allen/programs/mindscope/workgroups/dynamicrouting/dynamic_gating/nwbs/probes_lookup_table.csv')
@@ -283,7 +283,7 @@ def generate_sdk_modules(session_str: str, is_dynamic_gating=False, is_vbn_opto=
         units_lookup_table_path = pathlib.Path(vbn_lookup_base_path, 'units_lookup_table.csv')
 
     save_nwb_json(session_parameters, session, probe_lookup_table_path, channel_lookup_table_path, units_lookup_table_path, non_doc=non_doc,
-                  is_dynamic_gating=is_dynamic_gating, is_vbn_opto=is_vbn_opto)
+                  is_dynamic_gating=is_dynamic_gating, is_vbn_opto=is_vbn_opto, scale=scale)
 
 if __name__ == '__main__':
     """
@@ -306,7 +306,7 @@ if __name__ == '__main__':
     #session = np_session.Session('1179670730_612090_20220524')
     #session_parameters = generate_session_parameters(session)
 
-    sessions = ['1309245241_689656_20231107']
+    sessions = ['1214409109_626279_20220927']
 
     for session in sessions:
         generate_sdk_modules(session, is_vbn_opto=True)

@@ -188,7 +188,7 @@ def get_channels_info_for_probe(current_probe:str, session_data_dict:dict, probe
                 'left_right_ccf_coordinate': -1,
                 'probe_horizontal_position': -1,
                 'probe_vertical_position': -1,
-                'id': int(channel_ids[i]),
+                'id': int(channel_ids[channel_start]),
                 'valid_data': True
             }
 
@@ -336,7 +336,7 @@ def get_channels_info_for_vbn_opto(current_probe:str, session_data_dict:dict, pr
 
 def get_units_info_for_probe(current_probe:str, session:np_session.Session, channels:list[dict], isi_areas:pd.DataFrame, structure_tree:pd.DataFrame,
                              units_lookup_table:pd.DataFrame, units_lookup_table_output_path:pathlib.Path,
-                             unit_start:int, probe_in_lookup:bool=True):
+                             unit_start:int, probe_in_lookup:bool=True, scale:int=1):
     metrics_csv_files = session.metrics_csv
     probe_metrics_csv_file = [metrics_file for metrics_file in metrics_csv_files if current_probe in metrics_file.as_posix()][0]
     print(probe_metrics_csv_file)
@@ -415,9 +415,9 @@ def get_units_info_for_probe(current_probe:str, session:np_session.Session, chan
             'waveform_duration': row.duration if not pd.isna(row.duration) else 0,
             'waveform_halfwidth': row.halfwidth if not pd.isna(row.halfwidth) else 0,
             'PT_ratio': row.PT_ratio if not pd.isna(row.PT_ratio) else 0,
-            'repolarization_slope': row.repolarization_slope if not pd.isna(row.repolarization_slope) else 0,
-            'recovery_slope': row.recovery_slope if not pd.isna(row.recovery_slope) else 0,
-            'amplitude': row.amplitude if not pd.isna(row.amplitude) else 0,
+            'repolarization_slope': row.repolarization_slope / scale if not pd.isna(row.repolarization_slope) else 0,
+            'recovery_slope': row.recovery_slope / scale if not pd.isna(row.recovery_slope) else 0,
+            'amplitude': row.amplitude / scale if not pd.isna(row.amplitude) else 0,
             'spread': row.spread if not pd.isna(row.spread) else 0,
             'velocity_above': row.velocity_above if not pd.isna(row.velocity_above) else 0,
             'velocity_below': row.velocity_below if not pd.isna(row.velocity_below) else 0,
@@ -615,11 +615,11 @@ def generate_nwb_input_json(module_parameters:dict, session:np_session.Session, 
                              probe_id:int, channel_lookup_table:pd.DataFrame, channel_lookup_table_output_path: pathlib.Path,
                              units_lookup_table:pd.DataFrame, units_lookup_table_output_path: pathlib.Path,
                              channel_start:int, unit_start:int, non_doc=False, probe_in_lookup=True, is_dynamic_gating=False,
-                             is_vbn_opto=False):
+                             is_vbn_opto=False, scale=1):
     current_probe = module_parameters['current_probe']
     output_path = pathlib.Path(module_parameters['nwb_path'], str(module_parameters['session_id']))
     check_and_make_output_path(output_path)
-    nwb_path = pathlib.Path(output_path, '{}.nwb'.format(str(module_parameters['session_id']))).as_posix()
+    nwb_path = pathlib.Path(output_path, '{}_.nwb'.format(str(module_parameters['session_id']))).as_posix()
 
     with open(pathlib.Path(module_parameters['base_directory'], 'SDK_jsons', 'align_timestamps_generated_output.json'), 'r') as f:
         align_timestamps_output_json = json.load(f)
@@ -651,6 +651,7 @@ def generate_nwb_input_json(module_parameters:dict, session:np_session.Session, 
     probe_information = [probe_info for probe_info in align_timestamps_output_json['probe_outputs'] if probe_info['name'] == current_probe][0]
     probe_dict = {
         'name': current_probe,
+        'scale_mean_waveform_and_csd': scale,
         'sampling_rate': probe_information['global_probe_sampling_rate'],
         'temporal_subsampling_factor': 2,
         'lfp_sampling_rate': probe_information['global_probe_lfp_sampling_rate'],
@@ -685,7 +686,7 @@ def generate_nwb_input_json(module_parameters:dict, session:np_session.Session, 
     probe_dict['channels'] = channels
     units, unit_start = get_units_info_for_probe(current_probe, session, channels, isi_areas, structure_tree, 
                                                  units_lookup_table, units_lookup_table_output_path,
-                                     unit_start, probe_in_lookup=probe_in_lookup)
+                                     unit_start, probe_in_lookup=probe_in_lookup, scale=scale)
     probe_dict['units'] = units
 
     """
