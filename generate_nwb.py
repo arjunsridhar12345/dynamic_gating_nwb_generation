@@ -114,7 +114,7 @@ if __name__ == '__main__':
                 '1181731440_614547_20220603', '1182427414_607660_20220606', '1182628226_607660_20220607', '1182871514_607660_20220608',
                 '1183071525_607660_20220609']
     
-    for experiment in experiments:
+    for experiment in ['1176580734_611160_20220511']:
         nwb_session_directory = pathlib.Path(nwb_directory, experiment[0:experiment.index('_')])
         if nwb_session_directory.exists():
                 if len(list(nwb_session_directory.glob('*.nwb'))) > 0:

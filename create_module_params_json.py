@@ -45,7 +45,6 @@ def generate_session_parameters(session: np_session.Session, is_dynamic_gating:b
     #print(session.npexp_path)
     project = session.project
     probes = ['probe{}'.format(probe) for probe in list(session.probes_inserted)]
-    #probes = ['probeA']
     first_probe = probes[0]
     final_probe = probes[-1]
     probe_count = len(probes)
@@ -309,4 +308,4 @@ if __name__ == '__main__':
     sessions = ['1214409109_626279_20220927']
 
     for session in sessions:
-        generate_sdk_modules(session, is_vbn_opto=True)
+        generate_sdk_modules(session, is_vbn_opto=False, is_dynamic_gating=True)

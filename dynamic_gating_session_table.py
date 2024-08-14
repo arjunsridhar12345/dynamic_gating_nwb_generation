@@ -106,14 +106,14 @@ def generate_session_table() -> None:
                 session = np_session.Session(experiment[0:experiment.index('_')])
                 session_table_dict = add_to_session_table(session, session_table_dict)
                 
-                if len(list(nwb_session_directory.glob('*.nwb'))) > 5:
+                if len(list(nwb_session_directory.glob('*.nwb'))) > 1:
                     session_table_dict['has_lfp'].append(True)
                 else:
                     session_table_dict['has_lfp'].append(False)
     
     session_table_dataframe = pd.DataFrame(session_table_dict)
     session_table_dataframe = session_table_dataframe.set_index('ecephys_session_id')
-    session_table_dataframe.to_csv(nwb_directory / 'dynamic_gating_ecephys_sessions_table_07242023.csv')
+    session_table_dataframe.to_csv(nwb_directory / 'dynamic_gating_ecephys_sessions_table_06052024.csv')
 
 if __name__ == '__main__':
     generate_session_table()
