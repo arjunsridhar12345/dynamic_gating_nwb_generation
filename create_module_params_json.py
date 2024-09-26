@@ -41,7 +41,7 @@ def get_module_types(modules: list):
 def generate_session_parameters(session: np_session.Session, is_dynamic_gating:bool=False, is_vbn_opto:bool=False) -> dict:
     #print(session.lims_path)
     np_exp_path = pathlib.Path(session.npexp_path)
-    lims_path = pathlib.Path(session.lims_path)
+    #lims_path = pathlib.Path(session.lims_path)
     #print(session.npexp_path)
     project = session.project
     probes = ['probe{}'.format(probe) for probe in list(session.probes_inserted)]
@@ -58,7 +58,7 @@ def generate_session_parameters(session: np_session.Session, is_dynamic_gating:b
         nwb_path = pathlib.Path('//allen/programs/mindscope/workgroups/dynamicrouting/dynamic_gating', 'nwbs')
     
     if is_vbn_opto:
-        nwb_path = pathlib.Path('//allen/programs/mindscope/workgroups/dynamicrouting/docOpto/HVAsilencing', 'nwbs')
+        nwb_path = pathlib.Path('//allen/scratch/aibstemp/arjun.sridhar', 'nwbs')
 
     input_json = pathlib.Path(np_exp_path, 'SDK_jsons')
     output_json = pathlib.Path(np_exp_path, 'SDK_jsons')
@@ -77,7 +77,7 @@ def generate_session_parameters(session: np_session.Session, is_dynamic_gating:b
     session_parameters = {
         'session_id': session.id,
         'base_directory': np_exp_path,
-        'storage_directory': lims_path,
+        #'storage_directory': lims_path,
         'project': project,
         'output_path': output_path,
         'nwb_path': nwb_path,
@@ -264,12 +264,12 @@ def generate_sdk_modules(session_str: str, is_dynamic_gating=False, is_vbn_opto=
 
     #lfp_timestamps_generation(session_parameters)
     #save_lfp_subsampling_json(session_parameters)
-    #save_align_timestamps_json(session_parameters)
-    #run_align_timestamps(session_str)
+    save_align_timestamps_json(session_parameters)
+    run_align_timestamps(session_str)
     #if is_dynamic_gating:
-     #   save_optotagging_json(session_parameters)
+    save_optotagging_json(session_parameters)
     
-    #save_stimulus_table_json(session_parameters, non_doc=non_doc, is_dynamic_gating=is_dynamic_gating, is_vbn_opto=is_vbn_opto)
+    save_stimulus_table_json(session_parameters, non_doc=non_doc, is_dynamic_gating=is_dynamic_gating, is_vbn_opto=is_vbn_opto)
     #save_current_source_density_json(session_parameters)
     if is_dynamic_gating:
         probe_lookup_table_path = pathlib.Path('//allen/programs/mindscope/workgroups/dynamicrouting/dynamic_gating/nwbs/probes_lookup_table.csv')
@@ -305,7 +305,7 @@ if __name__ == '__main__':
     #session = np_session.Session('1179670730_612090_20220524')
     #session_parameters = generate_session_parameters(session)
 
-    sessions = ['1214409109_626279_20220927']
+    sessions = ['1375871900_725107_20240625']
 
     for session in sessions:
-        generate_sdk_modules(session, is_vbn_opto=False, is_dynamic_gating=True)
+        generate_sdk_modules(session, is_vbn_opto=True, is_dynamic_gating=False)

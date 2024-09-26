@@ -119,7 +119,7 @@ def get_ecephys_optotagging_table_json(module_params):
         }
     try:
         opto_pickle_path = glob(join(module_params['base_directory'],
-                                     '*.opto.pkl'))[0]
+                                     '*.optotagging.pkl'))[0]
     except IndexError:
         opto_pickle_path = glob(join(module_params['base_directory'],
                                      '**', '*.opto.pkl'))[0]
